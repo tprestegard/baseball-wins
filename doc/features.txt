@@ -1,0 +1,15 @@
+Brainstorming features:
+
+1. Pythagorean win percentage.
+2. Mean runs scored per game.
+3. Std dev. of runs scored per game.
+4. Mean runs allowed per game.
+5. Std dev. of runs allows per game.
+6. Team batting average.
+7. Team on base percentage.
+8. Team slugging percentage.
+9. Team OPS.
+10. Team stolen bases per game.
+11. Starting pitcher ERA (may be hard to get from game logs).
+12. Team win percentage in current game type (night vs. day, home vs. away).
+13. Significant injuries (may be hard to get from game logs).
