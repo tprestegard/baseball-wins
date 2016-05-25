@@ -10,54 +10,49 @@ years = range(2005,2016)
 d_dir = "data"
 raw_dir = d_dir + "/raw"
 
+# Log file.
+logfile = raw_dir + "/raw_data.log"
+
 # Retrosheet gamelog prefix.
 retro_pref = "http://www.retrosheet.org/gamelogs/"
 
 # Make data directories if they don't already exist.
 if not os.path.isdir(d_dir):
+    print "Creating directory " + d_dir + "."
     os.makedirs(d_dir)
 if not os.path.isdir(raw_dir):
+    print "Creating directory " + raw_dir + "."
     os.makedirs(raw_dir)
 
-# Set up lists of files.
-zip_names = ["gl" + yr_i + ".zip" for yr_i in years]
+# Set up lists.
+web_addr = [retro_pref + "gl" + str(yr_i) + ".zip" for yr_i in years]
+zip_names = [raw_dir + "/gl" + str(yr_i) + ".zip" for yr_i in years]
+raw_names = [raw_dir + "/GL" + str(yr_i) + ".TXT" for yr_i in years]
 
-    
 # Download files.
-for yr_i in years:
-    web_addr = retro_pref + str(yr_i) + ".zip"
-    out_name = raw_dir + "/gl" + str(yr_i) + ".zip"
-    if os.path.isfile(out_name):
-        print "Raw data zipfile " + out_name + " already exists."
+file_str = "" # string for writing to file.
+for i in range(0,len(years)):
+    if os.path.isfile(raw_names[i]):
+        print "Raw data file " + raw_names[i] + " already exists."
     else:
-        print "Getting " + out_name + " from " + web_addr + "."
+        # Get data from web source.
+        str1 = "Getting data from " + web_addr[i] + "."
+        print str1; file_str += str1 + "\n"
         testf = urllib.URLopener()
-        testf.retrieve(web_addr, out_name)
+        testf.retrieve(web_addr[i], zip_names[i])
+        # Unzip files.
+        str2 = "Unzipping " + zip_names[i] + " to " + raw_names[i] + "."
+        print str2; file_str += str2 + "\n"
+        zip_ref = zipfile.ZipFile(zip_names[i], 'r')
+        zip_ref.extractall(raw_dir)
+        zip_ref.close()
+        # Remove zip file.
+        str3 = "Removing zipfile " + zip_names[i] + "."
+        print str3; file_str += str3 + "\n"
+        os.remove(zip_names[i])
+
+# If file_str is not empty, get date/time,
+# attach to start of file_str, print to file.
+
         
-# Unzip files.
-z_list = os.listdir(raw_dir)
-for file_i in z_list:
-    # zipfile name
-    zip_name = raw_dir + "/" + file_i
-    # unzip name is based on experience with zipfile content
-    unzip_name = d_dir + "/" + file_i[:-4].upper() + ".TXT"
-    # we will rename the unzipped file.
-    new_name = d_dir + "/" + file_i[:-4].lower() + ".txt"
-    if os.path.isfile(unzip_name):
-        print "File " + unzip_name + " already exists."
-    else:
-        if os.path.isfile(new_name):
-            print "File " + new_name + " already exists."
-        else:
-            print "Unzipping " + zip_name + " to " + d_dir + "."
-            zip_ref = zipfile.ZipFile(zip_name, 'r')
-            zip_ref.extractall(d_dir)
-            zip_ref.close()
-
-    # Rename files.
-    if os.path.isfile(unzip_name):
-        print "Renaming file " + unzip_name + " to " + new_name + "."
-        os.rename(unzip_name,new_name)
-
-
 # EOF
